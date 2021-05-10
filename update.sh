@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
 export PS4='+ $0:$LINENO '
-set -efvx
 
 function error {
   exit "${1}"
 }
 
 function check {
+  set -efvx
+
   if [[ -z "${1}" ]]; then
     error "ERROR: No path selected"
   fi
@@ -24,6 +25,8 @@ function check {
 }
 
 function sequential_download {
+  set -efvx
+
   youtube-dl \
     --console-title \
     --download-archive downloaded.txt \
@@ -39,6 +42,8 @@ function sequential_download {
 }
 
 function parallel_download {
+  set -efvx
+
   check "${1}" "${2}"
 
   pushd "${1}" 1>/dev/null
