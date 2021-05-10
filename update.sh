@@ -67,6 +67,7 @@ function parallel_download {
             --restrict-filenames --" || true
   fi
 
+  # To verify previous command has downloaded everything.
   sequential_download "${2}" || true
 
   popd 1>/dev/null
