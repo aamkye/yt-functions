@@ -50,7 +50,7 @@ function parallel_download {
 
   echo "${2}" > url.txt
 
-  if [[ "${YT_NO_PARALLEL:-'0'}" -eq "1" ]]; then
+  if [[ "${YT_NO_PARALLEL:-0}" -eq "0" ]]; then
     youtube-dl \
       --get-id "${2}" \
       --limit-rate 10k \
