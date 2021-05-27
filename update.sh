@@ -7,7 +7,7 @@ function error {
 }
 
 function check {
-  set -efvx
+  # set -efvx
 
   if [[ -z "${1}" ]]; then
     error "ERROR: No path selected"
@@ -22,22 +22,25 @@ function check {
   if [[ ! -x "$(command -v parallel)" ]]; then
     error "ERROR: No 'parallel' binary found"
   fi
+  if [[ ! -x "$(command -v jq)" ]]; then
+    error "ERROR: No 'jq' binary found"
+  fi
 }
 
-function sequential_download {
-  set -efvx
+function __sequential_download {
+  # set -efvx
 
   youtube-dl \
     --console-title \
     --download-archive downloaded.txt \
     -ciwx \
     --audio-format mp3 \
-    -o '%(title)s.%(id)s.%(ext)s' \
+    -o "${YT_FORMAT:-%(title)s.%(id)s.%(ext)s}" \
     --audio-quality 0 \
     --retries 60 \
     --fragment-retries 60 \
     --skip-unavailable-fragments \
-    --restrict-filenames \
+    --restrict-filenames -- \
     "${1}"
 }
 
@@ -50,30 +53,37 @@ function parallel_download {
 
   echo "${2}" > url.txt
 
-  if [[ "${YT_NO_PARALLEL:-0}" -eq "0" ]]; then
+  if [[ "${YT_PARALLEL:-0}" -eq "1" ]]; then
     youtube-dl \
-      --get-id "${2}" \
-      --limit-rate 10k \
+      --match-filter '!is_live' \
+      --flat-playlist \
+      --dump-json \
       --retries 60 \
       --fragment-retries 60 \
       --skip-unavailable-fragments \
-      --playlist-random -i | \
-        parallel -j $(nproc) -l $(nproc) --linebuffer -- \
+      -i "$2" | jq -r '.id' > tmp.txt
+
+    cat tmp.txt | \
+      parallel \
+        -j "${YT_CORES:-$(nproc)}" \
+        --linebuffer -- \
           "youtube-dl \
             --console-title \
             --download-archive downloaded.txt \
             -ciwx \
             --audio-format mp3 \
-            -o '%(title)s.%(id)s.%(ext)s' \
+            -o '${YT_FORMAT:-%(title)s.%(id)s.%(ext)s}' \
             --audio-quality 0 \
             --retries 60 \
             --fragment-retries 60 \
             --skip-unavailable-fragments \
             --restrict-filenames --" || true
+
+    rm -f tmp.txt
   fi
 
   # To verify previous command has downloaded everything.
-  sequential_download "${2}" || true
+  __sequential_download "${2}" || true
 
   popd 1>/dev/null
 }
