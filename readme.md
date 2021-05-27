@@ -41,7 +41,7 @@ parallel_download <folderName> <urlWithVideos>
 YT_PARALLEL=1 parallel_download <folderName> <urlWithVideos>
 ```
 
-Please mind that `sequential_download` is invoked in `parallel_download` for confirmation of downloaded items and update
+Please mind that `__sequential_download` is invoked in `parallel_download` for confirmation of downloaded items and update
 
 ---
 
