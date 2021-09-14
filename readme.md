@@ -22,6 +22,7 @@ It was mainly created to boost initial download of large playlists, and have bee
 * youtube-dl
 * parallel
 * jq
+* ffmpeg
 
 ---
 
