@@ -31,6 +31,7 @@ function __sequential_download {
   # set -efvx
 
   youtube-dl \
+    --match-filter '!is_live' \
     --console-title \
     --download-archive downloaded.txt \
     -ciwx \
@@ -68,6 +69,7 @@ function parallel_download {
         -j "${YT_CORES:-$(nproc)}" \
         --linebuffer -- \
           "youtube-dl \
+            --match-filter '!is_live' \
             --console-title \
             --download-archive downloaded.txt \
             -ciwx \
