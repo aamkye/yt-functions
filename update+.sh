@@ -38,7 +38,7 @@ function __sequential_download {
   # set -efvx
 
   check_if_lockfile && \
-  youtube-dl \
+  yt-dlp \
     --match-filter '!is_live' \
     --console-title \
     --download-archive downloaded.txt \
@@ -64,7 +64,7 @@ function parallel_download {
 
   if [[ "${YT_PARALLEL:-0}" -eq "1" ]]; then
     check_if_lockfile && \
-    youtube-dl \
+    yt-dlp \
       --match-filter '!is_live' \
       --flat-playlist \
       --dump-json \
@@ -78,7 +78,7 @@ function parallel_download {
         -j "${YT_CORES:-$(nproc)}" \
         --linebuffer -- \
           "check_if_lockfile && \
-            youtube-dl \
+            yt-dlp \
             --match-filter '!is_live' \
             --console-title \
             --download-archive downloaded.txt \
